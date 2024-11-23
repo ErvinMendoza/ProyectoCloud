@@ -3,6 +3,7 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import {Route,BrowserRouter,Routes,HashRouter} from 'react-router-dom';
 import SingIn from './Pages/login';
+import Home from './Pages/home';
 import './App.css'
 
 function App() {
@@ -13,6 +14,7 @@ function App() {
     <HashRouter>
       <Routes>
         <Route exact path="/" element={<SingIn/>} />
+        <Route path="/home" element={<Home/>} />
         {/*<Route path="/Home" element={<Home/>} />
         <Route path="/Registrarse" element={<SingUp/>} />
         <Route path="/ilibros" element={<InventarioLibros/>} />

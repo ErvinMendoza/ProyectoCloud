@@ -7,11 +7,10 @@ import {  Link} from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { Grid, FormControl, Container, Typography, InputLabel } from '@mui/material';
 import { useState } from 'react';
-//import md5 from 'md5';
 import * as jwt_decode from 'jwt-decode';
 import Swal from 'sweetalert2'
 
-//const url = import.meta.env.VITE_API_CONSUME
+const url = 'http://localhost:5000' //import.meta.env.VITE_API_CONSUME
 
 
 export default function SingIn() {
@@ -22,9 +21,9 @@ export default function SingIn() {
     const handleSubmit = async(e) =>{
       e.preventDefault();
       const carnet = e.target.carnet.value;
-      // un md5 cuenta con 32 caracteres
-      const password = md5(e.target.password.value);
-      console.log(password)
+      const password = e.target.password.value;
+
+      console.log("antes de enviar datos...")
       try {
         const response = await fetch(`${url}/login`, {
           method: 'POST',
@@ -38,17 +37,13 @@ export default function SingIn() {
         });
   
         const data = await response.json();
-        if (response.ok) {
-          //Se obtiene la clave secreta para decodificar el token la cual se guarda en un archivo .env.local
-          const keyjwt = import.meta.env.VITE_JWT_KEY_SECRET_TOKEN
-          //Se decodifica el token para obtener los datos del usuario
-          const tokendeco = jwt_decode.jwtDecode(data.token, keyjwt)
-          //Se guarda el token en el localstorage
-          localStorage.setItem('idusuario', tokendeco.usuario.id)
-          console.log(localStorage.getItem('idusuario'))
-          localStorage.setItem('tipousuario', tokendeco.usuario.id_tipousuario)
-          localStorage.setItem('infousuario', JSON.stringify(tokendeco.usuario))
-          console.log(localStorage.getItem('infousuario'))
+
+        if (response.ok) {         
+          // Guarda usuario y email en localStorage
+          localStorage.setItem('usuario', data.usuario);
+          localStorage.setItem('email', data.email);
+
+          //-----------------------------------------------
           Swal.fire({
             title: 'Inicio de sesion exitoso!',
             text: 'Se ha iniciado sesion correctamente',
