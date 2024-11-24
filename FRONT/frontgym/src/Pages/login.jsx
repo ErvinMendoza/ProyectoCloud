@@ -42,6 +42,7 @@ export default function SingIn() {
           // Guarda usuario y email en localStorage
           localStorage.setItem('usuario', data.usuario);
           localStorage.setItem('email', data.email);
+          localStorage.setItem('id', data.id)
 
           //-----------------------------------------------
           Swal.fire({

@@ -1,11 +1,22 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import { Button, Container, Typography } from '@mui/material';
 import usaclogo from '../components/BackSingInUp/image/usaclogo.png';
+import GraficaLine1 from '../components/Graficas/GraficaLine1';
+import GraficaBar from '../components/Graficas/GraficaBar';
+
 const Home = () => {
+
+  const url = 'http://localhost:5000' //import.meta.env.VITE_API_CONSUME
+  const [labels, setLabels] = useState([]);
+  const [datasetData, setDatasetData] = useState([]);
+  const [labelsC, setLabelsC] = useState([]);
+  const [datasetDataC, setDatasetDataC] = useState([]);
+
   const navigate = useNavigate();
+  const userId = localStorage.getItem('id');
 
   // Función para cerrar sesión
   const handleLogout = () => {
@@ -13,68 +24,61 @@ const Home = () => {
     navigate('/'); // Redirige al login
   };
 
-  // Función para navegar a editar perfil
- /* const handleEditProfile = () => {
-    navigate('/editar-perfil'); // Cambia esta ruta según la configuración de tus rutas
-  };
-  
-  
-  <Container sx={{ textAlign: 'center', marginTop: '5rem' }}>
-        <Typography variant="h4" gutterBottom>
-            Bienvenido, {localStorage.getItem('usuario') || 'Usuario'}
-        </Typography>
-        <Typography variant="body1" gutterBottom>
-            Selecciona una opción a continuación:
-        </Typography>
-        <Button 
-            variant="contained" 
-            color="secondary" 
-            sx={{ margin: '1rem' }} 
-            onClick={handleLogout}>
-            Cerrar Sesión
-        </Button>
-        </Container>
+  const fetchFechasVueltas = async () => {
+      try {
+          const response = await fetch(`${url}/registros/por-fecha`);//fetch(`${url}/login`
+          if (!response.ok) {
+              throw new Error('Error al obtener los datos');
+          }
+          const data = await response.json();
+          const fechas = data.map(item => item.fecha);
+          const vueltas = data.map(item => item.total_vueltas);
+          setLabels(fechas);
+          setDatasetData(vueltas);
+      } catch (error) {
+          console.error('Error al obtener datos:', error);
+      }
+    };
 
-         <div>
-                <nav classNameName="navbar navbar-expand-lg navbar-light bg-light fixed-top">
-                <div classNameName="container-fluid">
-                <a classNameName="navbar-brand" >Tu Aplicación</a>
-                <button classNameName="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                    <span classNameName="navbar-toggler-icon"></span>
-                </button>
-                <div classNameName="collapse navbar-collapse" id="navbarNav">
-                    <ul classNameName="navbar-nav ml-auto">
-                    <li classNameName="nav-item">
-                    <Button 
-                        variant="contained" 
-                        color="secondary" 
-                        sx={{ margin: '1rem' }} 
-                        onClick={handleLogout}>
-                        Cerrar Sesión
-                    </Button>
-                    </li>
-                    <li classNameName="nav-item">
-                        <Button 
-                            variant="contained" 
-                            color="secondary" 
-                            sx={{ margin: '1rem' }} 
-                            onClick={handleLogout}>
-                            Editar Perfil
-                        </Button>
-                    </li>
-                    
-                    </ul>
-                </div>
-                </div>
-            </nav>
-          </div>
-  */
+    useEffect(() => {
+      fetchFechasVueltas();
+  }, []);
+
+
+    // Función para obtener las calorías quemadas por el usuario
+    const fetchCalorias = async () => {
+      try {
+        const response = await fetch(`${url}/calorias/${userId}`);
+        if (!response.ok) {
+          throw new Error('Error al obtener las calorías');
+        }
+        const data = await response.json();
+        
+        if (data.message) {
+          // Si no se encontraron registros, manejarlo
+          console.error(data.message);
+          return;
+        }
+        
+        const calorias = data.calorias_quemadas;
+        setLabelsC([localStorage.getItem('usuario') || 'Usuario']); // Solo mostrar un label con el nombre de usuario
+        setDatasetDataC([calorias]); // Mostrar las calorías como el dataset
+      } catch (error) {
+        console.error('Error al obtener calorías:', error);
+      }
+    };
+
+
+  useEffect(() => {
+    fetchFechasVueltas();
+    fetchCalorias();
+}, []);
 
         return (
             <div>
             <nav className="navbar navbar-expand-lg navbar-light bg-light fixed-top">
               <div className="container-fluid">
-              <a class="navbar-brand">
+              <a className="navbar-brand">
                 <img src = {usaclogo} alt="Logo" width="110" height="44" class="d-inline-block align-text-top"></img>
                 </a>
                 <a className="navbar-brand" >Bienvenido ! {localStorage.getItem('usuario') || 'Usuario'}</a>
@@ -124,8 +128,32 @@ const Home = () => {
             </nav>
       
             <div className="container mt-5 pt-5">
-              <h1>Bienvenido al Home</h1>
+              <h1>Bienvenido a tu app GYM</h1>
             </div>
+            <div>
+            <GraficaLine1
+                labels={labels}
+                datasetData={datasetData}
+                initialPointStyle="rect" // Estilo inicial de los puntos
+              />
+
+            </div>
+            {/* Llamada a la gráfica de barras (GraficaBar) con datos de calorías */}
+            <div>
+              <GraficaBar
+                labels={labelsC}
+                datasets={[{
+                  label: 'Calorías quemadas',
+                  data: datasetDataC,
+                  backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                  borderColor: 'rgba(75, 192, 192, 1)',
+                  borderWidth: 1,
+                  borderRadius: 5,
+                  borderSkipped: false,
+                }]}
+              />
+            </div>
+
           </div>
           );
 };
