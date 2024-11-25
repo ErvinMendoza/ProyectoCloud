@@ -10,7 +10,7 @@ import { useState } from 'react';
 import * as jwt_decode from 'jwt-decode';
 import Swal from 'sweetalert2'
 
-const url = 'http://localhost:5000' //import.meta.env.VITE_API_CONSUME
+const url = 'http://3.82.229.218:5000' //import.meta.env.VITE_API_CONSUME
 
 
 export default function SingIn() {

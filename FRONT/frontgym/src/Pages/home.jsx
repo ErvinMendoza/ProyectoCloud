@@ -9,7 +9,7 @@ import GraficaBar from '../components/Graficas/GraficaBar';
 
 const Home = () => {
 
-  const url = 'http://localhost:5000' //import.meta.env.VITE_API_CONSUME
+  const url = 'http://3.82.229.218:5000' //import.meta.env.VITE_API_CONSUME
   const [labels, setLabels] = useState([]);
   const [datasetData, setDatasetData] = useState([]);
   const [labelsC, setLabelsC] = useState([]);
